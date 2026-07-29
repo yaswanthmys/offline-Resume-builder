@@ -2,6 +2,7 @@
   "use strict";
 
   const STORAGE_KEY = "offline-resume-builder-v1";
+  const THEME_KEY = "offline-resume-builder-theme";
   const optionalSections = [
     "Experience",
     "Projects",
@@ -66,6 +67,15 @@
   const nextBtn = document.getElementById("nextBtn");
   const preview = document.getElementById("resumePreview");
   const pageCountLabel = document.getElementById("pageCountLabel");
+  const themeToggleBtn = document.getElementById("themeToggleBtn");
+
+  applyTheme(loadTheme());
+
+  themeToggleBtn.addEventListener("click", () => {
+    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(nextTheme);
+    localStorage.setItem(THEME_KEY, nextTheme);
+  });
 
   document.getElementById("saveDraftBtn").addEventListener("click", () => {
     persistState();
@@ -177,6 +187,18 @@
 
   function persistState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function loadTheme() {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved === "dark" || saved === "light") return saved;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    themeToggleBtn.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
+    themeToggleBtn.setAttribute("aria-pressed", String(theme === "dark"));
   }
 
   function render() {
@@ -614,7 +636,7 @@
   }
 
   function stylesXml() {
-    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:rPr><w:b/><w:sz w:val="52"/><w:font w:ascii="Arial"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Contact"><w:name w:val="Contact"/><w:rPr><w:sz w:val="19"/><w:color w:val="404852"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading"><w:name w:val="Heading"/><w:pPr><w:spacing w:before="180" w:after="60"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/><w:color w:val="111827"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Bullet"><w:name w:val="Bullet"/><w:rPr><w:sz w:val="20"/></w:rPr></w:style></w:styles>`;
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos" w:cs="Aptos"/><w:sz w:val="20"/></w:rPr></w:rPrDefault></w:docDefaults><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:rPr><w:b/><w:sz w:val="52"/><w:rFonts w:ascii="Aptos Display" w:hAnsi="Aptos Display" w:cs="Aptos"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Contact"><w:name w:val="Contact"/><w:rPr><w:sz w:val="19"/><w:color w:val="404852"/><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos" w:cs="Aptos"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading"><w:name w:val="Heading"/><w:pPr><w:spacing w:before="180" w:after="60"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/><w:color w:val="111827"/><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos" w:cs="Aptos"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Bullet"><w:name w:val="Bullet"/><w:rPr><w:sz w:val="20"/><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos" w:cs="Aptos"/></w:rPr></w:style></w:styles>`;
   }
 
   function createZip(files) {
