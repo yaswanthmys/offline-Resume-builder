@@ -7,8 +7,13 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <button class="mobile-menu-button" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">
+      Menu
+    </button>
+    <div class="mobile-backdrop" id="mobileBackdrop" hidden></div>
+
     <div class="app-shell">
-      <aside class="sidebar" aria-label="Resume builder progress">
+      <aside class="sidebar" id="appSidebar" aria-label="Resume builder progress">
         <div class="brand">
           <span class="brand-mark">R</span>
           <div>

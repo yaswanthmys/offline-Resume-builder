@@ -68,8 +68,16 @@
   const preview = document.getElementById("resumePreview");
   const pageCountLabel = document.getElementById("pageCountLabel");
   const themeToggleBtn = document.getElementById("themeToggleBtn");
+  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+  const mobileBackdrop = document.getElementById("mobileBackdrop");
 
   applyTheme(loadTheme());
+
+  mobileMenuBtn.addEventListener("click", () => toggleMobileSidebar());
+  mobileBackdrop.addEventListener("click", () => toggleMobileSidebar(false));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") toggleMobileSidebar(false);
+  });
 
   themeToggleBtn.addEventListener("click", () => {
     const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
@@ -101,6 +109,7 @@
   backBtn.addEventListener("click", () => {
     syncForm();
     currentStep = Math.max(0, currentStep - 1);
+    toggleMobileSidebar(false);
     render();
   });
 
@@ -108,6 +117,7 @@
     if (!form.reportValidity()) return;
     syncForm();
     currentStep = Math.min(steps.length - 1, currentStep + 1);
+    toggleMobileSidebar(false);
     render();
   });
 
@@ -199,6 +209,13 @@
     document.documentElement.dataset.theme = theme;
     themeToggleBtn.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
     themeToggleBtn.setAttribute("aria-pressed", String(theme === "dark"));
+  }
+
+  function toggleMobileSidebar(force) {
+    const isOpen = force === undefined ? !document.body.classList.contains("sidebar-open") : force;
+    document.body.classList.toggle("sidebar-open", isOpen);
+    mobileMenuBtn.setAttribute("aria-expanded", String(isOpen));
+    mobileBackdrop.hidden = !isOpen;
   }
 
   function render() {
