@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Offline Resume Builder</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Resume builder progress">
+        <div class="brand">
+          <span class="brand-mark">R</span>
+          <div>
+            <strong>Resume Builder</strong>
+            <span>Offline ATS resume</span>
+          </div>
+        </div>
+
+        <ol class="steps" id="steps"></ol>
+
+        <div class="sidebar-actions">
+          <button class="ghost-button" id="saveDraftBtn" type="button">Save Draft</button>
+          <button class="ghost-button danger" id="clearDraftBtn" type="button">Clear</button>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <section class="editor" aria-live="polite">
+          <div class="page-title">
+            <p id="stepKicker"></p>
+            <h1 id="stepTitle"></h1>
+            <span id="stepHint"></span>
+          </div>
+
+          <form id="builderForm" autocomplete="on"></form>
+
+          <div class="nav-actions">
+            <button class="secondary-button" id="backBtn" type="button">Back</button>
+            <button class="primary-button" id="nextBtn" type="button">Next</button>
+          </div>
+        </section>
+
+        <section class="preview-panel" aria-label="Resume preview">
+          <div class="preview-toolbar">
+            <div>
+              <strong>Preview</strong>
+              <span id="pageCountLabel">1 page target</span>
+            </div>
+            <div class="toolbar-buttons">
+              <button class="secondary-button" id="downloadDocxBtn" type="button">DOCX</button>
+              <button class="primary-button" id="printPdfBtn" type="button">PDF</button>
+            </div>
+          </div>
+
+          <article class="resume-page" id="resumePreview"></article>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
