@@ -181,6 +181,7 @@
 
   function render() {
     const step = steps[currentStep];
+    document.body.dataset.step = step.id;
     stepKicker.textContent = `Step ${currentStep + 1} of ${steps.length}`;
     stepTitle.textContent = step.title;
     stepHint.textContent = step.hint;
@@ -251,17 +252,31 @@
   }
 
   function renderSectionPicker() {
+    const selectedSummary = document.createElement("div");
+    selectedSummary.className = "selected-summary";
+    selectedSummary.innerHTML = state.selectedSections.length
+      ? state.selectedSections.map((section) => `<button class="selected-chip" type="button" data-section="${escapeAttr(section)}">${escapeHtml(section)} ×</button>`).join("")
+      : `<span>No extra sections selected yet.</span>`;
+    form.appendChild(selectedSummary);
+
     const wrapper = document.createElement("div");
     wrapper.className = "checkbox-grid";
     wrapper.innerHTML = optionalSections
       .map((section) => `
-        <label class="option-tile">
+        <label class="option-tile ${state.selectedSections.includes(section) ? "picked" : ""}">
           <input type="checkbox" name="selectedSections" value="${escapeHtml(section)}" ${state.selectedSections.includes(section) ? "checked" : ""}>
           <span>${escapeHtml(section)}</span>
         </label>
       `)
       .join("");
     form.appendChild(wrapper);
+
+    selectedSummary.querySelectorAll(".selected-chip").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.selectedSections = state.selectedSections.filter((section) => section !== button.dataset.section);
+        render();
+      });
+    });
 
     const pageField = elementFromHtml(`
       <div class="field full">
@@ -528,7 +543,6 @@
       "_rels/.rels": relsXml(),
       "word/document.xml": documentXml,
       "word/styles.xml": stylesXml(),
-      "word/numbering.xml": numberingXml(),
     };
     const blob = new Blob([createZip(files)], {
       type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -582,7 +596,7 @@
     const escaped = escapeXml(text || "");
     const runStyle = style === "Strong" ? "<w:rPr><w:b/></w:rPr>" : style === "Italic" ? "<w:rPr><w:i/><w:color w:val=\"4B5563\"/></w:rPr>" : "";
     const pStyle = style && !["Strong", "Italic"].includes(style) ? `<w:pPr><w:pStyle w:val="${style}"/></w:pPr>` : "";
-    const bullet = style === "Bullet" ? "<w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr></w:pPr>" : pStyle;
+    const bullet = style === "Bullet" ? "<w:pPr><w:ind w:left=\"360\" w:hanging=\"180\"/></w:pPr>" : pStyle;
     return `<w:p>${bullet}<w:r>${runStyle}<w:t xml:space="preserve">${escaped}</w:t></w:r></w:p>`;
   }
 
@@ -592,7 +606,7 @@
   }
 
   function contentTypesXml() {
-    return `<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/></Types>`;
+    return `<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`;
   }
 
   function relsXml() {
@@ -601,10 +615,6 @@
 
   function stylesXml() {
     return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:rPr><w:b/><w:sz w:val="52"/><w:font w:ascii="Arial"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Contact"><w:name w:val="Contact"/><w:rPr><w:sz w:val="19"/><w:color w:val="404852"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading"><w:name w:val="Heading"/><w:pPr><w:spacing w:before="180" w:after="60"/></w:pPr><w:rPr><w:b/><w:sz w:val="24"/><w:color w:val="111827"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Bullet"><w:name w:val="Bullet"/><w:rPr><w:sz w:val="20"/></w:rPr></w:style></w:styles>`;
-  }
-
-  function numberingXml() {
-    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:abstractNum w:abstractNumId="0"><w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="•"/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="360" w:hanging="180"/></w:pPr></w:lvl></w:abstractNum><w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num></w:numbering>`;
   }
 
   function createZip(files) {

@@ -272,6 +272,26 @@ select:focus {
   width: auto;
 }
 
+.selected-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-height: 36px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.selected-chip {
+  min-height: 34px;
+  border: 1px solid rgba(47, 111, 115, 0.28);
+  border-radius: 999px;
+  padding: 0 12px;
+  color: var(--accent-strong);
+  background: rgba(47, 111, 115, 0.08);
+  font-weight: 800;
+}
+
 .nav-actions,
 .preview-toolbar,
 .toolbar-buttons {
@@ -520,6 +540,14 @@ select:focus {
   .nav-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  body:not([data-step="finish"]) .preview-panel {
+    display: none;
+  }
+
+  .option-tile.picked {
+    display: none;
   }
 
   .toolbar-buttons,
